@@ -2,7 +2,7 @@ import express from "express";
 import type { Logger } from "pino";
 import pinoHttp from "pino-http";
 
-import * as schema from "./schema";
+import * as schema from "./schema/request";
 
 export function createServer(logger: Logger) {
   const app = express();
