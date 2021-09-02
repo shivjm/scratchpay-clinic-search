@@ -4,13 +4,30 @@ import chaiHttp from "chai-http";
 import pino from "pino";
 
 import { createServer } from "../src/server";
+import { ClinicData } from "../src/schema/data";
 
 chai.use(chaiHttp);
+
+function loadLocalData(): readonly ClinicData[] {
+  const clinics: readonly unknown[] = require("./dental-clinics.json").concat(
+    require("./vet-clinics.json"),
+  );
+
+  return clinics.map((c) => {
+    if (!ClinicData(c)) {
+      throw new Error(`${c} is not a valid clinic entry`);
+    }
+
+    return c;
+  });
+}
 
 // the log file would ideally be configurable, but then it would be another
 // configuration variable to keep track of and would only make sense during
 // testing, so it’s hard-coded for now
-const app = createServer(pino(pino.destination("test.log")), async () => []);
+const app = createServer(pino(pino.destination("test.log")), async () =>
+  loadLocalData(),
+);
 
 const JSON_CONTENT_TYPE = "application/json";
 

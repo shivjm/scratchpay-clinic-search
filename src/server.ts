@@ -4,6 +4,8 @@ import pinoHttp from "pino-http";
 
 import * as schema from "./schema/request";
 import { ClinicData } from "./schema/data";
+import { matches } from "./match";
+import { parseClinicFromData } from "./clinic";
 
 export function createServer(
   logger: Logger,
@@ -37,7 +39,9 @@ export function createServer(
     // fetch it even for invalid requests
     const clinics = await fetchData();
 
-    return res.status(200).json(clinics);
+    return res
+      .status(200)
+      .json(clinics.filter((c) => matches(parseClinicFromData(c), body)));
   });
 
   return app;
