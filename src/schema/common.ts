@@ -2,10 +2,9 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import { Type } from "@sinclair/typebox";
 
-/** A {RegExp} to match an hour and minute. */
-const TIME_RE = /^(?:(?:[01][0-9]|2[0-3]):[0-5][0-9])$/;
+import { TIME_RE } from "../time";
 
-const Time = Type.Union([Type.RegEx(TIME_RE), Type.Literal("24:00")]);
+const Time = Type.RegEx(TIME_RE);
 
 export const NonWhitespace = Type.RegEx(/\S/);
 
