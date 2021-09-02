@@ -3,15 +3,19 @@ import type { Logger } from "pino";
 import pinoHttp from "pino-http";
 
 import * as schema from "./schema/request";
+import { ClinicData } from "./schema/data";
 
-export function createServer(logger: Logger) {
+export function createServer(
+  logger: Logger,
+  fetchData: () => Promise<readonly ClinicData[]>,
+) {
   const app = express();
 
   app.use(pinoHttp({ logger }));
 
   app.use(express.json());
 
-  app.get("/search", (req, res) => {
+  app.get("/search", async (req, res) => {
     const { body } = req;
 
     if (!schema.SearchRequest(body)) {
@@ -29,7 +33,11 @@ export function createServer(logger: Logger) {
       return res.sendStatus(400);
     }
 
-    return res.sendStatus(200);
+    // the data could be fetched in middleware, but then we’d unnecessarily
+    // fetch it even for invalid requests
+    const clinics = await fetchData();
+
+    return res.status(200).json(clinics);
   });
 
   return app;

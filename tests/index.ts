@@ -10,7 +10,9 @@ chai.use(chaiHttp);
 // the log file would ideally be configurable, but then it would be another
 // configuration variable to keep track of and would only make sense during
 // testing, so it’s hard-coded for now
-const app = createServer(pino(pino.destination("test.log")));
+const app = createServer(pino(pino.destination("test.log")), async () => []);
+
+const JSON_CONTENT_TYPE = "application/json";
 
 describe("GET /search", () => {
   it("requires at least one valid parameter", async () => {
@@ -40,14 +42,18 @@ describe("GET /search", () => {
 
   it("understands valid parameters", async () => {
     for (const [name, state, availability] of [
-      ["anything", "CA", { from: "00:00", to: "24:00" }],
-      ["  X  ", "Victoria", { from: "02:00", to: "02:01" }],
+      ["Nothing that matches", "Florida", { from: "00:00", to: "24:00" }],
+      [" Mayo Clinic ", "Kansas", { from: "02:00", to: "02:01" }],
     ]) {
       const response = await chai
         .request(app)
         .get("/search")
         .send({ name, state, availability });
       assert.equal(response.status, 200);
+      assert.equal(response.type, JSON_CONTENT_TYPE);
+
+      const parsed = JSON.parse(response.text);
+      assert.deepEqual(parsed, []);
     }
   });
 });
