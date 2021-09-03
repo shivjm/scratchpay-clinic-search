@@ -4,7 +4,7 @@ import { Type } from "@sinclair/typebox";
 
 import { TIME_RE } from "../time";
 
-const Time = Type.RegEx(TIME_RE);
+export const Time = Type.RegEx(TIME_RE);
 
 export const NonWhitespace = Type.RegEx(/\S/);
 

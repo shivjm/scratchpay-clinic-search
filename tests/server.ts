@@ -33,21 +33,19 @@ describe("GET /search", () => {
     const response1 = await request.get("/search");
     assert.equal(response1.status, 400);
 
-    const response2 = await chai
-      .request(app)
-      .get("/search")
-      .query({
-        name: "	\n ",
-        state: "   \n",
-        availability: { from: "0900", to: "5050" },
-      });
+    const response2 = await chai.request(app).get("/search").query({
+      name: "	\n ",
+      state: "   \n",
+      from: "0900",
+      to: "5050",
+    });
     assert.equal(response2.status, 400);
   });
 
   it("does not allow invalid parameters", async () => {
     for (const req of [
       { name: "x", extra: "y" },
-      { availability: { from: "05:00", to: "09:00", on: "12" } },
+      { from: "05:00", to: "09:00", on: "12" },
     ]) {
       const response = await request.get("/search").query(req);
       assert.equal(response.status, 400);
@@ -55,13 +53,15 @@ describe("GET /search", () => {
   });
 
   it("understands valid parameters", async () => {
-    for (const [name, state, availability] of [
+    const CASES: readonly [string, string, Record<string, string>][] = [
       ["Nothing that matches", "Unknown", { from: "00:00", to: "24:00" }],
       [" Mayo Clinic ", "Non-existent", { from: "02:00", to: "02:01" }],
-    ]) {
+    ];
+
+    for (const [name, state, { from, to }] of CASES) {
       const response = await request
         .get("/search")
-        .query({ name, state, availability });
+        .query({ name, state, from, to });
       assert.equal(response.status, 200);
       assert.equal(response.type, JSON_CONTENT_TYPE);
 
@@ -212,7 +212,8 @@ describe("GET /search", () => {
 
     for (const [from, to, results] of CASES) {
       const response = await request.get("/search").query({
-        availability: { from, to },
+        from,
+        to,
       });
       assert.equal(response.status, 200);
       assert.equal(response.type, JSON_CONTENT_TYPE);
@@ -234,10 +235,7 @@ describe("GET /search", () => {
           {
             name: "National Veterinary Clinic",
             state: { name: "California", code: "CA" },
-            availability: {
-              from: "15:00",
-              to: "22:30",
-            },
+            availability: { from: "15:00", to: "22:30" },
           },
         ],
       ],
@@ -247,7 +245,8 @@ describe("GET /search", () => {
       const response = await request.get("/search").query({
         name,
         state,
-        availability: { from, to },
+        from,
+        to,
       });
       assert.equal(response.status, 200);
       assert.equal(response.type, JSON_CONTENT_TYPE);

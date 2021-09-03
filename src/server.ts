@@ -22,19 +22,29 @@ export function createServer(
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   app.get("/search", async (req, res) => {
     const { query } = req;
+
     if (!schema.SearchRequest(query)) {
       return res.sendStatus(400);
     }
 
-    const { name, availability, state } = query;
+    const { name, from, to, state } = query;
 
     if (
       name === undefined &&
-      availability === undefined &&
+      from === undefined &&
+      to === undefined &&
       state === undefined
     ) {
-      // at least one parameter must be provided
       return res.sendStatus(400);
+    }
+
+    if (
+      (from !== undefined || to !== undefined) &&
+      !(from !== undefined && to !== undefined)
+    ) {
+      return res
+        .status(400)
+        .send({ error: "Cannot specify only one of `from` and `to`" });
     }
 
     // the data could be fetched in middleware, but then we’d unnecessarily
@@ -66,11 +76,11 @@ function asMatchParameters(request: schema.SearchRequest): IMatchParameters {
     params.state = normalize(request.state);
   }
 
-  if (request.availability !== undefined) {
-    const { availability } = request;
+  if (request.from !== undefined && request.to !== undefined) {
+    const { from, to } = request;
     params.availability = {
-      from: parseTime(availability.from),
-      to: parseTime(availability.to),
+      from: parseTime(from),
+      to: parseTime(to),
     };
   }
 
