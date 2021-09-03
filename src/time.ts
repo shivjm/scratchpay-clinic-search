@@ -22,6 +22,14 @@ export function parseTime(hourAndMinutes: string): ITime {
   };
 }
 
+export function formatTime(time: ITime): string {
+  return `${formatAsTwoDigits(time.hour)}:${formatAsTwoDigits(time.minute)}`;
+}
+
 function parseDecimalInteger(value: string): number {
   return parseInt(value, 10);
+}
+
+function formatAsTwoDigits(component: number): string {
+  return component.toString().padStart(2, "0");
 }
