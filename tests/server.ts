@@ -41,7 +41,7 @@ describe("GET /search", () => {
     const response2 = await chai
       .request(app)
       .get("/search")
-      .send({
+      .query({
         name: "	\n ",
         state: "   \n",
         availability: { from: "0900", to: "5050" },
@@ -54,7 +54,7 @@ describe("GET /search", () => {
       { name: "x", extra: "y" },
       { availability: { from: "05:00", to: "09:00", on: "12" } },
     ]) {
-      const response = await request.get("/search").send(req);
+      const response = await request.get("/search").query(req);
       assert.equal(response.status, 400);
     }
   });
@@ -66,7 +66,7 @@ describe("GET /search", () => {
     ]) {
       const response = await request
         .get("/search")
-        .send({ name, state, availability });
+        .query({ name, state, availability });
       assert.equal(response.status, 200);
       assert.equal(response.type, JSON_CONTENT_TYPE);
 
@@ -76,7 +76,7 @@ describe("GET /search", () => {
   });
 
   it("matches based on state code", async () => {
-    const response = await request.get("/search").send({
+    const response = await request.get("/search").query({
       state: "CA",
     });
     assert.equal(response.status, 200);
@@ -117,7 +117,7 @@ describe("GET /search", () => {
   });
 
   it("matches clinics based on state name", async () => {
-    const response = await request.get("/search").send({
+    const response = await request.get("/search").query({
       state: "CA",
     });
     assert.equal(response.status, 200);
@@ -196,7 +196,7 @@ describe("GET /search", () => {
     ];
 
     for (const [needle, results] of CASES) {
-      const response = await request.get("/search").send({
+      const response = await request.get("/search").query({
         name: needle,
       });
       assert.equal(response.status, 200);
@@ -240,7 +240,7 @@ describe("GET /search", () => {
     ];
 
     for (const [from, to, results] of CASES) {
-      const response = await request.get("/search").send({
+      const response = await request.get("/search").query({
         availability: { from, to },
       });
       assert.equal(response.status, 200);
@@ -273,7 +273,7 @@ describe("GET /search", () => {
     ];
 
     for (const [name, state, from, to, results] of CASES) {
-      const response = await request.get("/search").send({
+      const response = await request.get("/search").query({
         name,
         state,
         availability: { from, to },

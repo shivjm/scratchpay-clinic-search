@@ -19,13 +19,12 @@ export function createServer(
   app.use(express.json());
 
   app.get("/search", async (req, res) => {
-    const { body } = req;
-
-    if (!schema.SearchRequest(body)) {
+    const { query } = req;
+    if (!schema.SearchRequest(query)) {
       return res.sendStatus(400);
     }
 
-    const { name, availability, state } = body;
+    const { name, availability, state } = query;
 
     if (
       name === undefined &&
@@ -40,7 +39,7 @@ export function createServer(
     // fetch it even for invalid requests
     const clinics = await fetchData();
 
-    const parameters = asMatchParameters(body);
+    const parameters = asMatchParameters(query);
 
     return res
       .status(200)
