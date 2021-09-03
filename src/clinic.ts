@@ -45,7 +45,9 @@ export function parseClinicFromData(data: ClinicData): IClinic {
 /**
  * Turns an `IClinic` into an object that can be returned to the user as JSON.
  * Excludes internal properties. */
-export function prepareClinicForSerialization(clinic: IClinic): object {
+export function prepareClinicForSerialization(
+  clinic: IClinic,
+): Record<string, unknown> {
   return {
     name: clinic.name,
     state: clinic.state,

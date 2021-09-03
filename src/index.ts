@@ -1,4 +1,6 @@
+/* eslint-disable */
 require("dotenv-safe").config();
+/* eslint-enable */
 
 import { createServer } from "./server";
 import {
