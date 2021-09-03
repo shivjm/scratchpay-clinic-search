@@ -1,0 +1,20 @@
+name: Build and test
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+env:
+  NODE_VERSION: v14.17.3
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm ci
+      - run: npm test
