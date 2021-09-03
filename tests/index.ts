@@ -28,12 +28,13 @@ function loadLocalData(): readonly ClinicData[] {
 const app = createServer(pino(pino.destination("test.log")), async () =>
   loadLocalData(),
 );
+const request = chai.request(app).keepOpen();
 
 const JSON_CONTENT_TYPE = "application/json";
 
 describe("GET /search", () => {
   it("requires at least one valid parameter", async () => {
-    const response1 = await chai.request(app).get("/search");
+    const response1 = await request.get("/search");
     assert.equal(response1.status, 400);
 
     const response2 = await chai
@@ -52,7 +53,7 @@ describe("GET /search", () => {
       { name: "x", extra: "y" },
       { availability: { from: "05:00", to: "09:00", on: "12" } },
     ]) {
-      const response = await chai.request(app).get("/search").send(req);
+      const response = await request.get("/search").send(req);
       assert.equal(response.status, 400);
     }
   });
@@ -62,8 +63,7 @@ describe("GET /search", () => {
       ["Nothing that matches", "Florida", { from: "00:00", to: "24:00" }],
       [" Mayo Clinic ", "Kansas", { from: "02:00", to: "02:01" }],
     ]) {
-      const response = await chai
-        .request(app)
+      const response = await request
         .get("/search")
         .send({ name, state, availability });
       assert.equal(response.status, 200);
@@ -73,4 +73,7 @@ describe("GET /search", () => {
       assert.deepEqual(parsed, []);
     }
   });
+
+after(() => {
+  request.close();
 });
