@@ -5,22 +5,16 @@ import pino from "pino";
 
 import { createServer } from "../src/server";
 import { ClinicData } from "../src/schema/data";
-import { IClinic, parseClinicFromData } from "../src/clinic";
+import { IClinic } from "../src/clinic";
+import { parseData } from "../src/data";
 
 chai.use(chaiHttp);
 
 function loadLocalData(): readonly IClinic[] {
-  const clinics: readonly unknown[] = require("./dental-clinics.json").concat(
-    require("./vet-clinics.json"),
-  );
+  const clinics: readonly ClinicData[] =
+    require("./dental-clinics.json").concat(require("./vet-clinics.json"));
 
-  return clinics.map((c) => {
-    if (!ClinicData(c)) {
-      throw new Error(`${c} is not a valid clinic entry`);
-    }
-
-    return parseClinicFromData(c);
-  });
+  return parseData(clinics);
 }
 
 // the log file would ideally be configurable, but then it would be another
