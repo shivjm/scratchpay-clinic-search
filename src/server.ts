@@ -24,7 +24,7 @@ export function createServer(
     const { query } = req;
 
     if (!schema.SearchRequest(query)) {
-      return res.sendStatus(400);
+      return res.status(400).send({ message: "Cannot parse query" });
     }
 
     const { name, from, to, state } = query;
@@ -35,7 +35,9 @@ export function createServer(
       to === undefined &&
       state === undefined
     ) {
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .send({ message: "Must specify at least one search parameter" });
     }
 
     if (
@@ -44,7 +46,7 @@ export function createServer(
     ) {
       return res
         .status(400)
-        .send({ error: "Cannot specify only one of `from` and `to`" });
+        .send({ message: "Must use `from` and `to` together" });
     }
 
     // the data could be fetched in middleware, but then we’d unnecessarily
