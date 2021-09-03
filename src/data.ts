@@ -3,10 +3,19 @@ import crypto from "crypto";
 import got from "got";
 
 import { IClinic, parseClinicFromData } from "./clinic";
+import { Memoized } from "./memoize";
 import { ClinicData } from "./schema/data";
 
 /** A character that can be used to separate parts of a clinic’s data in a string. */
 const INVISIBLE_SEPARATOR = "⁣";
+
+export function createCachedFetch(
+  apiUrl: string,
+  types: readonly string[],
+  maxAgeSeconds: number,
+): Memoized<readonly ClinicData[]> {
+  return new Memoized(() => fetchData(apiUrl, types), maxAgeSeconds);
+}
 
 export async function fetchData(
   apiUrl: string,

@@ -1,10 +1,14 @@
 require("dotenv-safe").config();
 
 import { createServer } from "./server";
-import { API_URL, CLINIC_FILES, PORT } from "./config";
+import { API_URL, CLINIC_FILES, DATA_CACHE_DURATION, PORT } from "./config";
 import { LOGGER } from "./logger";
-import { fetchData, parseData } from "./data";
+import { createCachedFetch, fetchData, parseData } from "./data";
 
-createServer(LOGGER, async () =>
-  parseData(await fetchData(API_URL, CLINIC_FILES)),
-).listen(PORT);
+const cache = createCachedFetch(API_URL, CLINIC_FILES, DATA_CACHE_DURATION);
+const fetch =
+  DATA_CACHE_DURATION > 0
+    ? () => cache.get()
+    : () => fetchData(API_URL, CLINIC_FILES);
+
+createServer(LOGGER, async () => parseData(await fetch())).listen(PORT);

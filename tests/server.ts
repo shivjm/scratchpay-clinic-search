@@ -10,6 +10,7 @@ import { parseData } from "../src/data";
 
 chai.use(chaiHttp);
 
+// avoid loading remote data during the tests
 function loadLocalData(): readonly IClinic[] {
   const clinics: readonly ClinicData[] =
     require("./dental-clinics.json").concat(require("./vet-clinics.json"));
