@@ -21,6 +21,7 @@ export class Memoized<T> {
       await this.refresh();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const diffMs = this.timestamp! - new Date().getTime();
     const diff = diffMs / 1000;
 
@@ -28,11 +29,12 @@ export class Memoized<T> {
       await this.refresh();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.data!;
   }
 
   /** Retrieves fresh data and updates the internal timestamp. */
-  async refresh() {
+  async refresh(): Promise<void> {
     this.data = await this.getData();
     this.timestamp = new Date().getTime();
   }

@@ -11,13 +11,15 @@ import { parseTime } from "./time";
 export function createServer(
   logger: Logger,
   fetchData: () => Promise<readonly IClinic[]>,
-) {
+): express.Application {
   const app = express();
 
   app.use(pinoHttp({ logger }));
 
   app.use(express.json());
 
+  // (ESLint is right about this but here we have no remaining middleware to call)
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   app.get("/search", async (req, res) => {
     const { query } = req;
     if (!schema.SearchRequest(query)) {
