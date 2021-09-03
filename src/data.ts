@@ -12,18 +12,22 @@ const INVISIBLE_SEPARATOR = "⁣";
 export function createCachedFetch(
   apiUrl: string,
   types: readonly string[],
+  timeoutSeconds: number,
   maxAgeSeconds: number,
 ): Memoized<readonly ClinicData[]> {
-  return new Memoized(() => fetchData(apiUrl, types), maxAgeSeconds);
+  return new Memoized(
+    () => fetchData(apiUrl, types, timeoutSeconds),
+    maxAgeSeconds,
+  );
 }
 
 export async function fetchData(
   apiUrl: string,
   types: readonly string[],
+  timeoutSeconds: number,
 ): Promise<readonly ClinicData[]> {
-  // TODO add timeout
   const dataSets = await Promise.all(
-    types.map((type) => fetchFile(apiUrl, type)),
+    types.map((type) => fetchFile(apiUrl, type, timeoutSeconds)),
   );
 
   return dataSets.flat();
@@ -32,8 +36,11 @@ export async function fetchData(
 async function fetchFile(
   apiUrl: string,
   type: string,
+  timeoutSeconds: number,
 ): Promise<readonly ClinicData[]> {
-  const json = await got(`${apiUrl}${type}-clinics.json`).json();
+  const json = await got(`${apiUrl}${type}-clinics.json`, {
+    timeout: timeoutSeconds * 1000,
+  }).json();
 
   if (!Array.isArray(json)) {
     throw new Error(`Invalid ${type} data file`);

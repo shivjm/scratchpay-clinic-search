@@ -8,3 +8,6 @@ export const DATA_CACHE_DURATION = parseInt(
   process.env.DATA_CACHE_DURATION!,
   10,
 );
+
+/** How long in seconds to wait for a remote data file to be fetched before timing out. */
+export const TIMEOUT = parseInt(process.env.TIMEOUT!, 10);

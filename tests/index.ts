@@ -8,12 +8,15 @@ require("dotenv-safe").config({ path: "testing.env" });
 
 import { createServer } from "../src/server";
 import { createCachedFetch, fetchData, parseData } from "../src/data";
-import { API_URL, CLINIC_FILES, DATA_CACHE_DURATION } from "../src/config";
-import { Server } from "http";
+import {
+  API_URL,
+  CLINIC_FILES,
+  DATA_CACHE_DURATION,
+  PORT,
+  TIMEOUT,
+} from "../src/config";
 
 chai.use(chaiHttp);
-
-const { PORT } = process.env;
 
 describe("The API", async () => {
   let scopes: nock.Scope[] = [];
@@ -70,7 +73,12 @@ describe("The API", async () => {
       }
     };
 
-    const cache = createCachedFetch(API_URL, CLINIC_FILES, DATA_CACHE_DURATION);
+    const cache = createCachedFetch(
+      API_URL,
+      CLINIC_FILES,
+      DATA_CACHE_DURATION,
+      TIMEOUT,
+    );
 
     const app = createServer(
       pino(pino.destination("integration-test.log")),
@@ -89,7 +97,7 @@ describe("The API", async () => {
 
     const app2 = createServer(
       pino(pino.destination("integration-test.log")),
-      async () => parseData(await fetchData(API_URL, CLINIC_FILES)),
+      async () => parseData(await fetchData(API_URL, CLINIC_FILES, TIMEOUT)),
     );
 
     const server2 = app2.listen(PORT);
