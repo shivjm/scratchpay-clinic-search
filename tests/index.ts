@@ -5,10 +5,11 @@ import pino from "pino";
 
 import { createServer } from "../src/server";
 import { ClinicData } from "../src/schema/data";
+import { IClinic, parseClinicFromData } from "../src/clinic";
 
 chai.use(chaiHttp);
 
-function loadLocalData(): readonly ClinicData[] {
+function loadLocalData(): readonly IClinic[] {
   const clinics: readonly unknown[] = require("./dental-clinics.json").concat(
     require("./vet-clinics.json"),
   );
@@ -18,7 +19,7 @@ function loadLocalData(): readonly ClinicData[] {
       throw new Error(`${c} is not a valid clinic entry`);
     }
 
-    return c;
+    return parseClinicFromData(c);
   });
 }
 
