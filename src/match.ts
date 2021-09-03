@@ -24,18 +24,34 @@ export function matches(data: IClinic, request: IMatchParameters): boolean {
 }
 
 /**
- * Tests whether the state in the data matches the provided search string by
+ * Tests whether a clinic’s state exactly matches the provided search string by
  * name or by code.
  *
+ * @param data The state to test.
+ * @param provided The search string (case-insensitive).
  * @returns `true` if the string matches the state name or code, `false` otherwise */
 function matchState(data: IState, provided: string): boolean {
   return data.code === provided || data.name === provided;
 }
 
+/**
+ * Tests whether a clinic’s name contains the provided search
+ * string.
+ *
+ * @param data The clinic name to test (normalized).
+ * @param provided The search string (case-insensitive).
+ */
 function matchName(data: string, provided: string): boolean {
   return data.indexOf(provided.toLowerCase()) > -1;
 }
 
+/**
+ * Tests whether the availability of a clinic overlaps with the provided time
+ * window.
+ *
+ * @param data The clinic name to test.
+ * @param provided The time window.
+ */
 function matchAvailability(
   data: IAvailability,
   provided: IRequestAvailability,

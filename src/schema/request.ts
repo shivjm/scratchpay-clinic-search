@@ -1,6 +1,6 @@
 import { Static, Type } from "@sinclair/typebox";
 
-import { AJV, Availability, NonWhitespace, Time } from "./common";
+import { AJV, NonWhitespace, Time } from "./common";
 
 const Name = NonWhitespace;
 

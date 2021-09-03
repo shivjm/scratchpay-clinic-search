@@ -27,6 +27,10 @@ const STATES_BY_CODE = ((data) => {
   return Object.freeze(obj);
 })(states);
 
+/**
+ * Returns the state with the given name if it exists, throws an error otherwise.
+ *
+ * @param name The name to search for (case-insensitive). */
 export function findStateByName(name: string): IState {
   const found = STATES_BY_NAME[name.toLowerCase()];
   if (found !== undefined) {
@@ -36,6 +40,10 @@ export function findStateByName(name: string): IState {
   throw new Error(`Unknown state name: ${name}`);
 }
 
+/**
+ * Returns the state with the given code if it exists, throws an error otherwise.
+ *
+ * @param code The code to search for (case-insensitive). */
 export function findStateByCode(code: string): IState {
   const found = STATES_BY_CODE[code.toLowerCase()];
   if (found !== undefined) {

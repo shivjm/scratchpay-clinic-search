@@ -8,6 +8,11 @@ import { IClinic, prepareClinicForSerialization } from "./clinic";
 import { normalize } from "./text";
 import { parseTime } from "./time";
 
+/**
+ * Creates an {express.Application} that serves the `/search` route.
+ *
+ * @param logger An existing {Logger} instance to use.
+ * @param fetchData A callback to fetch the data whenever a search request is received. */
 export function createServer(
   logger: Logger,
   fetchData: () => Promise<readonly IClinic[]>,
