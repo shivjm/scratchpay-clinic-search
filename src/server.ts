@@ -55,18 +55,22 @@ export function createServer(
 
     const parameters = asMatchParameters(query);
 
-    return res
-      .status(200)
-      .json(
-        clinics
-          .filter((c) => matches(c, parameters))
-          .map(prepareClinicForSerialization),
-      );
+    return res.status(200).json(
+      // This step creates a copy of (a subset of) the array. It’s also possible
+      // to iterate over the array and write each result to the response stream
+      // as we match it. The downside of that method is the inability to
+      // elegantly handle errors and the need for extra bookkeeping (the opening
+      // and close brackets, and commas between elements).
+      clinics
+        .filter((c) => matches(c, parameters))
+        .map(prepareClinicForSerialization),
+    );
   });
 
   return app;
 }
 
+/** Converts a {schema.SearchRequest} into an {IMatchParameters} by only including and parsing non-empty properties. */
 function asMatchParameters(request: schema.SearchRequest): IMatchParameters {
   const params: IMatchParameters = {};
 
