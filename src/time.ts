@@ -1,3 +1,5 @@
+import { parseDecimalInteger } from "./number";
+
 /** A regular expression to match an hour and minute (including `24:00`). */
 export const TIME_RE = /^(?:(?:[01][0-9]|2[0-3]):[0-5][0-9])|24:00$/;
 
@@ -24,10 +26,6 @@ export function parseTime(hourAndMinutes: string): ITime {
 
 export function formatTime(time: ITime): string {
   return `${formatAsTwoDigits(time.hour)}:${formatAsTwoDigits(time.minute)}`;
-}
-
-function parseDecimalInteger(value: string): number {
-  return parseInt(value, 10);
 }
 
 function formatAsTwoDigits(component: number): string {

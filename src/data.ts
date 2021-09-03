@@ -9,6 +9,7 @@ import { ClinicData } from "./schema/data";
 /** A character that can be used to separate parts of a clinic’s data in a string. */
 const INVISIBLE_SEPARATOR = "⁣";
 
+/** Creates a memoized version of `fetchData`. */
 export function createCachedFetch(
   apiUrl: string,
   types: readonly string[],
@@ -21,6 +22,7 @@ export function createCachedFetch(
   );
 }
 
+/** Fetches the given files from the Scratchpay API. */
 export async function fetchData(
   apiUrl: string,
   types: readonly string[],
@@ -33,6 +35,7 @@ export async function fetchData(
   return dataSets.flat();
 }
 
+/** Fetches a single file from the Scratchpay API. */
 async function fetchFile(
   apiUrl: string,
   type: string,
@@ -55,6 +58,7 @@ async function fetchFile(
   });
 }
 
+/** Parses the raw data from Scratchpay into a common form without duplicates. */
 export function parseData(data: readonly ClinicData[]): readonly IClinic[] {
   const existing = new Set();
 
@@ -62,6 +66,9 @@ export function parseData(data: readonly ClinicData[]): readonly IClinic[] {
 
   for (const c of data) {
     const parsed = parseClinicFromData(c);
+
+    // generate a hash based on the name and state code using a separator that
+    // isn’t likely to show up in actual data
     const id = sha256(
       [parsed.name, parsed.state.code].join(INVISIBLE_SEPARATOR),
     );
@@ -75,6 +82,7 @@ export function parseData(data: readonly ClinicData[]): readonly IClinic[] {
   return unique;
 }
 
+/** Generates a SHA-256 hash for the given string. */
 function sha256(input: string) {
   return crypto.createHash("sha256").update(input).digest("hex");
 }

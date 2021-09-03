@@ -53,10 +53,8 @@ describe("The API", async () => {
           .query({
             name: "veterina",
             state: "California",
-            availability: {
-              from: "14:00",
-              to: "24:00",
-            },
+            from: "14:00",
+            to: "24:00",
           });
 
         assert.equal(response.status, 200);

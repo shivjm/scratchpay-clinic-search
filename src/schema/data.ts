@@ -24,6 +24,7 @@ const ClinicDataSchema = Type.Union([
   VetClinicDataSchema,
 ]);
 
+/** Raw clinic data of any kind. */
 export type ClinicData = Static<typeof ClinicDataSchema>;
 
 /** Tries to parse an object as a clinic and assert its type as `ClinicData`.

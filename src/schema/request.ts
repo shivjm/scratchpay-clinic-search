@@ -1,6 +1,6 @@
 import { Static, Type } from "@sinclair/typebox";
 
-import { AJV, Availability, NonWhitespace } from "./common";
+import { AJV, NonWhitespace, Time } from "./common";
 
 const Name = NonWhitespace;
 
@@ -11,7 +11,8 @@ const SearchRequestSchema = Type.Object(
   {
     name: Type.Optional(Name),
     state: Type.Optional(State),
-    availability: Type.Optional(Availability),
+    from: Type.Optional(Time),
+    to: Type.Optional(Time),
   },
   { additionalProperties: false },
 );

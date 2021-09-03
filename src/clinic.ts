@@ -18,8 +18,10 @@ export interface IClinic {
   normalizedName: string;
 }
 
+/** Parses multiple kinds of clinic data into a uniform interface. */
 export function parseClinicFromData(data: ClinicData): IClinic {
   if ("name" in data) {
+    // dental clinic
     return {
       name: data.name,
       state: findStateByName(data.stateName),
@@ -30,6 +32,7 @@ export function parseClinicFromData(data: ClinicData): IClinic {
       normalizedName: normalize(data.name.toLowerCase()),
     };
   } else {
+    // vet clinic
     return {
       name: data.clinicName,
       state: findStateByCode(data.stateCode),

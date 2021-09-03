@@ -8,6 +8,11 @@ import { IClinic, prepareClinicForSerialization } from "./clinic";
 import { normalize } from "./text";
 import { parseTime } from "./time";
 
+/**
+ * Creates an {express.Application} that serves the `/search` route.
+ *
+ * @param logger An existing {Logger} instance to use.
+ * @param fetchData A callback to fetch the data whenever a search request is received. */
 export function createServer(
   logger: Logger,
   fetchData: () => Promise<readonly IClinic[]>,
@@ -22,19 +27,31 @@ export function createServer(
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   app.get("/search", async (req, res) => {
     const { query } = req;
+
     if (!schema.SearchRequest(query)) {
-      return res.sendStatus(400);
+      return res.status(400).send({ message: "Cannot parse query" });
     }
 
-    const { name, availability, state } = query;
+    const { name, from, to, state } = query;
 
     if (
       name === undefined &&
-      availability === undefined &&
+      from === undefined &&
+      to === undefined &&
       state === undefined
     ) {
-      // at least one parameter must be provided
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .send({ message: "Must specify at least one search parameter" });
+    }
+
+    if (
+      (from !== undefined || to !== undefined) &&
+      !(from !== undefined && to !== undefined)
+    ) {
+      return res
+        .status(400)
+        .send({ message: "Must use `from` and `to` together" });
     }
 
     // the data could be fetched in middleware, but then we’d unnecessarily
@@ -43,18 +60,22 @@ export function createServer(
 
     const parameters = asMatchParameters(query);
 
-    return res
-      .status(200)
-      .json(
-        clinics
-          .filter((c) => matches(c, parameters))
-          .map(prepareClinicForSerialization),
-      );
+    return res.status(200).json(
+      // This step creates a copy of (a subset of) the array. It’s also possible
+      // to iterate over the array and write each result to the response stream
+      // as we match it. The downside of that method is the inability to
+      // elegantly handle errors and the need for extra bookkeeping (the opening
+      // and close brackets, and commas between elements).
+      clinics
+        .filter((c) => matches(c, parameters))
+        .map(prepareClinicForSerialization),
+    );
   });
 
   return app;
 }
 
+/** Converts a {schema.SearchRequest} into an {IMatchParameters} by only including and parsing non-empty properties. */
 function asMatchParameters(request: schema.SearchRequest): IMatchParameters {
   const params: IMatchParameters = {};
 
@@ -66,11 +87,11 @@ function asMatchParameters(request: schema.SearchRequest): IMatchParameters {
     params.state = normalize(request.state);
   }
 
-  if (request.availability !== undefined) {
-    const { availability } = request;
+  if (request.from !== undefined && request.to !== undefined) {
+    const { from, to } = request;
     params.availability = {
-      from: parseTime(availability.from),
-      to: parseTime(availability.to),
+      from: parseTime(from),
+      to: parseTime(to),
     };
   }
 

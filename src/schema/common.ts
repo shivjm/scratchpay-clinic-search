@@ -4,10 +4,13 @@ import { Type } from "@sinclair/typebox";
 
 import { TIME_RE } from "../time";
 
-const Time = Type.RegEx(TIME_RE);
+/** A regular expression to match a time (from 00:00 to 24:00). */
+export const Time = Type.RegEx(TIME_RE);
 
+/** A regular expression to match one non-whitespace character. */
 export const NonWhitespace = Type.RegEx(/\S/);
 
+/** A time window. */
 export const Availability = Type.Object(
   {
     from: Time,
