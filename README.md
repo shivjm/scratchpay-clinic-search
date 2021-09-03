@@ -11,7 +11,7 @@ An HTTP API to search for clinics in the Scratchpay network.
 You must provide at least one of these as query parameters:
 
 | Name | Description | Example |
---------------------------------
+|------|-------------|---------|
 | `name` | String to search for in clinic name (case-insensitive) | `health` |
 | `state` | State name or state code (case-insensitive) | `Alaska`, `KS` |
 | `from` | Start of time window (`00:00` to `24:00`), to be used with `to` | `05:00` |
@@ -80,12 +80,16 @@ dist/src/index.js</kbd>.
 
 ### Configuration
 
-You must provide these settings through environment variables or in a `.env` file:
+You must provide these settings through environment variables or in a .env file:
 
 | Name | Description | Example |
---------------------------------
+|------|-------------|---------|
 | `API_URL` | The base URL for the Scratchpay API, with a trailing slash | `https://www.example.com/api/` |
 | `CLINIC_FILES` | A comma-separated list of types of clinics | `vet,dental` (corresponds to `vet-clinics.json` and `dental-clinics.json` |
 | `DATA_CACHE_DURATION` | How long in seconds to cache the remote data for (0 to disable caching) | 3600 |
 | `PORT` | The port to listen for requests on | 3000 |
 | `TIMEOUT` | How long in seconds to try to fetch remote data before timing out | 60 |
+
+### Docker
+
+A Docker image is available at [ghcr.io/shivjm/scratchpay-clinic-search](https://github.com/shivjm/scratchpay-clinic-search/pkgs/container/scratchpay-clinic-search). You can run it from the command-line using a pre-existing .env file like this: <kbd>docker run -it --env-file=.env ghcr.io/shivjm/scratchpay-clinic-search:latest</kbd>. Alternatively, you can specify each environment variable using the <kbd>-e</kbd> flag, e.g. <kbd>docker run -it -e API_URL=https://www.example.com/ ghcr.io/shivjm/scratchpay-clinic-search:latest</kbd>.
