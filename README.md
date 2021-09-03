@@ -1,6 +1,6 @@
 # scratchpay-clinic-search
 
-An HTTP API to search for clinics in the Scratchpay network.
+A RESTful service to search for clinics in the Scratchpay network.
 
 ## API
 
