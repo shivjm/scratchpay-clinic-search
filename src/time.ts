@@ -33,3 +33,31 @@ function parseDecimalInteger(value: string): number {
 function formatAsTwoDigits(component: number): string {
   return component.toString().padStart(2, "0");
 }
+
+export function greaterThan(a: ITime, b: ITime): boolean {
+  return compare(a, b) === 1;
+}
+
+export function lessThan(a: ITime, b: ITime): boolean {
+  return compare(a, b) === -1;
+}
+
+export function compare(a: ITime, b: ITime): number {
+  if (a.hour > b.hour) {
+    return 1;
+  }
+
+  if (b.hour > a.hour) {
+    return -1;
+  }
+
+  if (a.minute > b.minute) {
+    return 1;
+  }
+
+  if (b.minute > a.minute) {
+    return -1;
+  }
+
+  return 0;
+}
