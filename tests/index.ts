@@ -60,8 +60,8 @@ describe("GET /search", () => {
 
   it("understands valid parameters", async () => {
     for (const [name, state, availability] of [
-      ["Nothing that matches", "Florida", { from: "00:00", to: "24:00" }],
-      [" Mayo Clinic ", "Kansas", { from: "02:00", to: "02:01" }],
+      ["Nothing that matches", "Unknown", { from: "00:00", to: "24:00" }],
+      [" Mayo Clinic ", "Non-existent", { from: "02:00", to: "02:01" }],
     ]) {
       const response = await request
         .get("/search")
@@ -73,6 +73,216 @@ describe("GET /search", () => {
       assert.deepEqual(parsed, []);
     }
   });
+
+  it("matches based on state code", async () => {
+    const response = await request.get("/search").send({
+      state: "CA",
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.type, JSON_CONTENT_TYPE);
+
+    const parsed = JSON.parse(response.text);
+    assert.deepEqual(parsed, [
+      {
+        name: "Mount Sinai Hospital",
+        state: { name: "California", code: "CA" },
+        availability: { from: "12:00", to: "22:00" },
+      },
+      {
+        name: "Scratchpay Test Pet Medical Center",
+        state: { name: "California", code: "CA" },
+        availability: {
+          from: "00:00",
+          to: "24:00",
+        },
+      },
+      {
+        name: "National Veterinary Clinic",
+        state: { name: "California", code: "CA" },
+        availability: {
+          from: "15:00",
+          to: "22:30",
+        },
+      },
+      {
+        name: "Scratchpay Test Pet Medical Center",
+        state: { name: "California", code: "CA" },
+        availability: {
+          from: "00:00",
+          to: "24:00",
+        },
+      },
+    ]);
+  });
+
+  it("matches clinics based on state name", async () => {
+    const response = await request.get("/search").send({
+      state: "CA",
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.type, JSON_CONTENT_TYPE);
+
+    const parsed = JSON.parse(response.text);
+    assert.deepEqual(parsed, [
+      {
+        name: "Mount Sinai Hospital",
+        state: { name: "California", code: "CA" },
+        availability: { from: "12:00", to: "22:00" },
+      },
+      {
+        name: "Scratchpay Test Pet Medical Center",
+        state: { name: "California", code: "CA" },
+        availability: {
+          from: "00:00",
+          to: "24:00",
+        },
+      },
+      {
+        name: "National Veterinary Clinic",
+        state: { name: "California", code: "CA" },
+        availability: {
+          from: "15:00",
+          to: "22:30",
+        },
+      },
+      {
+        name: "Scratchpay Test Pet Medical Center",
+        state: { name: "California", code: "CA" },
+        availability: {
+          from: "00:00",
+          to: "24:00",
+        },
+      },
+    ]);
+  });
+
+  it("matches clinics case-insensitively based on name", async () => {
+    const CASES = [
+      [
+        "german",
+        [
+          {
+            name: "German Pets Clinics",
+            state: { name: "Kansas", code: "KS" },
+            availability: {
+              from: "08:00",
+              to: "20:00",
+            },
+          },
+        ],
+      ],
+      [
+        "good health",
+        [
+          {
+            name: "Good Health Home",
+            state: { name: "Alaska", code: "AK" },
+            availability: {
+              from: "10:00",
+              to: "19:30",
+            },
+          },
+          {
+            name: "Good Health Home",
+            state: { name: "Florida", code: "FL" },
+            availability: {
+              from: "15:00",
+              to: "20:00",
+            },
+          },
+        ],
+      ],
+    ];
+
+    for (const [needle, results] of CASES) {
+      const response = await request.get("/search").send({
+        name: needle,
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.type, JSON_CONTENT_TYPE);
+      assert.deepEqual(JSON.parse(response.text), results);
+    }
+  });
+
+  it("matches clinics based on availability", async () => {
+    const CASES: readonly [string, string, readonly any[]][] = [
+      [
+        "00:00",
+        "00:01",
+        [
+          {
+            name: "Scratchpay Test Pet Medical Center",
+            state: { name: "California", code: "CA" },
+            availability: {
+              from: "00:00",
+              to: "24:00",
+            },
+          },
+          {
+            name: "Scratchpay Official practice",
+            state: { name: "Tennessee", code: "TN" },
+            availability: {
+              from: "00:00",
+              to: "24:00",
+            },
+          },
+          {
+            name: "Scratchpay Test Pet Medical Center",
+            state: { name: "California", code: "CA" },
+            availability: {
+              from: "00:00",
+              to: "24:00",
+            },
+          },
+        ],
+      ],
+    ];
+
+    for (const [from, to, results] of CASES) {
+      const response = await request.get("/search").send({
+        availability: { from, to },
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.type, JSON_CONTENT_TYPE);
+      assert.deepEqual(JSON.parse(response.text), results);
+    }
+  });
+
+  it("matches clinics based on all criteria", async () => {
+    const CASES = [
+      ["Nationl", "California", "14:00", "24:00", []],
+      ["veterina", "Alaska", "14:00", "24:00", []],
+      ["veterina", "California", "22:45", "24:00", []],
+      [
+        "veterina",
+        "California",
+        "14:00",
+        "24:00",
+        [
+          {
+            name: "National Veterinary Clinic",
+            state: { name: "California", code: "CA" },
+            availability: {
+              from: "15:00",
+              to: "22:30",
+            },
+          },
+        ],
+      ],
+    ];
+
+    for (const [name, state, from, to, results] of CASES) {
+      const response = await request.get("/search").send({
+        name,
+        state,
+        availability: { from, to },
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.type, JSON_CONTENT_TYPE);
+      assert.deepEqual(JSON.parse(response.text), results);
+    }
+  });
+});
 
 after(() => {
   request.close();

@@ -5,10 +5,11 @@ import pinoHttp from "pino-http";
 import * as schema from "./schema/request";
 import { ClinicData } from "./schema/data";
 import { matches } from "./match";
-import { parseClinicFromData } from "./clinic";
+import { parseClinicFromData, prepareClinicForSerialization } from "./clinic";
 
 export function createServer(
   logger: Logger,
+  // TODO expect parsed `IClinic`
   fetchData: () => Promise<readonly ClinicData[]>,
 ) {
   const app = express();
@@ -37,11 +38,17 @@ export function createServer(
 
     // the data could be fetched in middleware, but then we’d unnecessarily
     // fetch it even for invalid requests
-    const clinics = await fetchData();
+    const clinics = (await fetchData()).map(parseClinicFromData);
+
+    // TODO normalize search request to avoid doing it in every comparison
 
     return res
       .status(200)
-      .json(clinics.filter((c) => matches(parseClinicFromData(c), body)));
+      .json(
+        clinics
+          .filter((c) => matches(c, body))
+          .map(prepareClinicForSerialization),
+      );
   });
 
   return app;
