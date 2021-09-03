@@ -3,8 +3,10 @@ import type { Logger } from "pino";
 import pinoHttp from "pino-http";
 
 import * as schema from "./schema/request";
-import { matches } from "./match";
+import { IMatchParameters, matches } from "./match";
 import { IClinic, prepareClinicForSerialization } from "./clinic";
+import { normalize } from "./text";
+import { parseTime } from "./time";
 
 export function createServer(
   logger: Logger,
@@ -38,16 +40,38 @@ export function createServer(
     // fetch it even for invalid requests
     const clinics = await fetchData();
 
-    // TODO normalize search request to avoid doing it in every comparison
+    const parameters = asMatchParameters(body);
 
     return res
       .status(200)
       .json(
         clinics
-          .filter((c) => matches(c, body))
+          .filter((c) => matches(c, parameters))
           .map(prepareClinicForSerialization),
       );
   });
 
   return app;
+}
+
+function asMatchParameters(request: schema.SearchRequest): IMatchParameters {
+  const params: IMatchParameters = {};
+
+  if (request.name !== undefined) {
+    params.name = normalize(request.name).toLowerCase();
+  }
+
+  if (request.state !== undefined) {
+    params.state = normalize(request.state);
+  }
+
+  if (request.availability !== undefined) {
+    const { availability } = request;
+    params.availability = {
+      from: parseTime(availability.from),
+      to: parseTime(availability.to),
+    };
+  }
+
+  return params;
 }

@@ -1,20 +1,23 @@
 import { IAvailability, IClinic } from "./clinic";
-import { SearchRequest } from "./schema/request";
 import { IState } from "./state";
-import { normalize } from "./text";
-import { greaterThan, lessThan, parseTime } from "./time";
+import { greaterThan, ITime, lessThan } from "./time";
 
-interface IRequestAvailability {
-  from: string;
-  to: string;
+export interface IMatchParameters {
+  name?: string;
+  state?: string;
+  availability?: IRequestAvailability;
 }
 
-export function matches(data: IClinic, request: SearchRequest): boolean {
+interface IRequestAvailability {
+  from: ITime;
+  to: ITime;
+}
+
+export function matches(data: IClinic, request: IMatchParameters): boolean {
   return (
-    (request.state === undefined ||
-      matchState(data.state, normalize(request.state))) &&
+    (request.state === undefined || matchState(data.state, request.state)) &&
     (request.name === undefined ||
-      matchName(data.normalizedName, normalize(request.name))) &&
+      matchName(data.normalizedName, request.name)) &&
     (request.availability === undefined ||
       matchAvailability(data.availability, request.availability))
   );
@@ -38,7 +41,6 @@ function matchAvailability(
   provided: IRequestAvailability,
 ): boolean {
   return (
-    !greaterThan(data.from, parseTime(provided.to)) &&
-    !lessThan(data.to, parseTime(provided.from))
+    !greaterThan(data.from, provided.to) && !lessThan(data.to, provided.from)
   );
 }
