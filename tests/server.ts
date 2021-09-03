@@ -99,14 +99,6 @@ describe("GET /search", () => {
           to: "22:30",
         },
       },
-      {
-        name: "Scratchpay Test Pet Medical Center",
-        state: { name: "California", code: "CA" },
-        availability: {
-          from: "00:00",
-          to: "24:00",
-        },
-      },
     ]);
   });
 
@@ -138,14 +130,6 @@ describe("GET /search", () => {
         availability: {
           from: "15:00",
           to: "22:30",
-        },
-      },
-      {
-        name: "Scratchpay Test Pet Medical Center",
-        state: { name: "California", code: "CA" },
-        availability: {
-          from: "00:00",
-          to: "24:00",
         },
       },
     ]);
@@ -216,14 +200,6 @@ describe("GET /search", () => {
           {
             name: "Scratchpay Official practice",
             state: { name: "Tennessee", code: "TN" },
-            availability: {
-              from: "00:00",
-              to: "24:00",
-            },
-          },
-          {
-            name: "Scratchpay Test Pet Medical Center",
-            state: { name: "California", code: "CA" },
             availability: {
               from: "00:00",
               to: "24:00",
