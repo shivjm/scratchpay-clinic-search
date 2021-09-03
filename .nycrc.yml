@@ -1,0 +1,7 @@
+include:
+  - src
+exclude:
+  - dist
+reporter: ["text", "json-summary"]
+report-dir: "coverage"
+all: true

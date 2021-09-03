@@ -6,3 +6,5 @@ node_modules
 .dir-locals.el
 
 *.log
+/coverage/
+/.nyc_output/
