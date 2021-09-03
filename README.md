@@ -85,7 +85,7 @@ You must provide these settings through environment variables or in a .env file:
 |------|-------------|---------|
 | `API_URL` | The base URL for the Scratchpay API, with a trailing slash | `https://www.example.com/api/` |
 | `CLINIC_FILES` | A comma-separated list of types of clinics | `vet,dental` (corresponds to `vet-clinics.json` and `dental-clinics.json`) |
-| `DATA_CACHE_DURATION` | How long in seconds to cache the remote data for (0 to disable caching) | 3600 |
+| `DATA_CACHE_DURATION` | How long in seconds to cache the remote data for (0 to always fetch & parse new data on every request) | 3600 |
 | `PORT` | The port to listen for requests on | 3000 |
 | `TIMEOUT` | How long in seconds to try to fetch remote data before timing out | 60 |
 
