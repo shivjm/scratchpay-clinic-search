@@ -31,7 +31,11 @@ export function matches(data: IClinic, request: IMatchParameters): boolean {
  * @param provided The search string (case-insensitive).
  * @returns `true` if the string matches the state name or code, `false` otherwise */
 function matchState(data: IState, provided: string): boolean {
-  return data.code === provided || data.name === provided;
+  // TODO add hidden, normalized code & name to `IState` to avoid repeated
+  // normalization
+  return (
+    data.code.toLowerCase() === provided || data.name.toLowerCase() === provided
+  );
 }
 
 /**
