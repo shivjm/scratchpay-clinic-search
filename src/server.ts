@@ -84,7 +84,7 @@ function asMatchParameters(request: schema.SearchRequest): IMatchParameters {
   }
 
   if (request.state !== undefined) {
-    params.state = normalize(request.state);
+    params.state = normalize(request.state).toLowerCase();
   }
 
   if (request.from !== undefined && request.to !== undefined) {

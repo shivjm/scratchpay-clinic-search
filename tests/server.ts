@@ -72,7 +72,7 @@ describe("GET /search", () => {
 
   it("matches based on state code", async () => {
     const response = await request.get("/search").query({
-      state: "CA",
+      state: "ca",
     });
     assert.equal(response.status, 200);
     assert.equal(response.type, JSON_CONTENT_TYPE);
